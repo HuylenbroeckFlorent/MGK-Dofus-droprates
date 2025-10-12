@@ -1,12 +1,14 @@
 function restrictNumberInput(input) {
-  let val = parseInt(input.target.value)
+    let val = parseInt(input.target.value)
 
-  if (val < this.min) {
-    input.target.value = this.min;
-  } else if (val > this.max) {
-    input.target.value = this.max;
-  }
+    if (input.target.hasAttribute("min") && val < this.min) {
+        input.target.value = this.min; 
+    } else if (input.target.hasAttribute("max") && val > this.max) {
+        input.target.value = this.max;
+    }
 }
-el = document.getElementById("pp")
-console.log(el)
-el.addEventListener("input", restrictNumberInput);
+pp_els = document.getElementsByClassName("minmaxrestricted")
+
+for (var el of pp_els) {
+    el.addEventListener("input", restrictNumberInput);
+}
