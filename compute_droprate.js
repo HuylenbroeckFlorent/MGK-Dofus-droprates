@@ -1,5 +1,8 @@
 var NBRE_JOUEURS = 4
-var PRECISION = 3
+var PRECISION = 2
+var PP_COFFRES = 300
+const BOOST_COFFRES = [3, 8, 10.5, 15.5, 15.5, 40.5]
+const MAX_BOOST_COFFRES = [3, 3, 3, 3, 5, 5]
 
 function create_nbr_players_options() {
     nbre_players_select = document.getElementById("nbre_players_input")
@@ -18,6 +21,11 @@ function set_nbr_players(input) {
     compute_drop_rate();
 }
 
+function set_precision(input) {
+    PRECISION = input.target.value;
+    compute_drop_rate();
+}
+
 function create_pp_content(kept = 0) {
 
     templ = document.getElementById("template_pp_x");
@@ -29,8 +37,7 @@ function create_pp_content(kept = 0) {
             tmp_kept--;
         } else {
             el.remove()
-        }
-        
+        } 
     }
 
     for (var i=kept; i<NBRE_JOUEURS; i++) {
@@ -47,25 +54,42 @@ function create_pp_content(kept = 0) {
 
             if (templ_clone_el.tagName === 'LABEL') {
                 templ_clone_el.htmlFor = templ_clone_el.htmlFor.replace(/x$/, i.toString());
-                templ_clone_el.textContent = "Propsection j" + (i+1);
             }
 
             if (templ_clone_el.tagName === 'INPUT') {
                 templ_clone_el.addEventListener("input", compute_drop_rate);
             }
         }
+        templ_clone.querySelector('[id^="pp_input_label_"]').textContent = "Propsection j" + (i+1);
         pp_root.append(templ_clone);
     }
 }
 
 function compute_drop_rate() {
-    pp_els = document.getElementById("pp").getElementsByClassName("minmaxrestricted");
+    pp_els = document.querySelectorAll('input[id^="pp_input_"]')
+    coffre_els = document.querySelectorAll('input[id^="pp_coffre_input_"]')
     qmax = parseInt(document.getElementById("qmax").value);
     base_rate = parseFloat(document.getElementById("base_rate").value)/100;
+    lvl_coffres = parseInt(document.getElementById("lvl_coffres_input").value)
+    nboosts_coffres = parseInt(document.getElementById("tours_coffres_input").value)
+
+    var boost_coffres = BOOST_COFFRES[lvl_coffres-1] * Math.min(MAX_BOOST_COFFRES[lvl_coffres-1], nboosts_coffres)
+
+    console.log(boost_coffres)
+
+    if (qmax == 0) {
+        qmax = NBRE_JOUEURS;
+    }
 
     pps = [];
     for (var pp of pp_els) {
         pps.push([pp.id.substr(pp.id.length - 1), Math.min(1, base_rate*parseInt(pp.value)/100)]);
+    }
+
+    for (var coffre of coffre_els) {
+        if (coffre.checked) {
+            pps.push(["coffre_"+coffre.id.substr(coffre.id.length - 1), Math.min(1, base_rate*(PP_COFFRES+boost_coffres)/100)]);
+        }
     }
 
     pps.sort(function compare_pp(pp_el_1, pp_el_2) {
@@ -80,15 +104,19 @@ function compute_drop_rate() {
 
     var root = tree(new Node(null, 1, 0), pps, qmax, 0);
 
-    console.log(pps)
-
+    for (var result_el of document.querySelectorAll('span[id^="pp_result"]')) {
+        result_el.textContent = "";
+    }
     for (var j=0; j < pps.length; j++) {
         document.getElementById("pp_result_"+pps[j][0]).textContent = (j_search(root, j, 0)*100).toFixed(PRECISION)+"%"
     }
 
-    for (var q=0; q <= qmax; q++) {
+    var total = 0;
+    for (var q=0; q <= Math.min(qmax, NBRE_JOUEURS); q++) {
+        total += q*q_search(root, q)
         console.log("Drop "+q+" item(s) : "+q_search(root, q)*100+"%"); // probabilité que 0<=q<=qmax objets soient trouvés.
     }
+    console.log("Nombre moyen d'item drop:"+ total)
 }
 
 // parent    : noeud parent
@@ -159,4 +187,7 @@ create_nbr_players_options()
 create_pp_content()
 document.getElementById("base_rate").addEventListener("input", compute_drop_rate);
 document.getElementById("qmax").addEventListener("input", compute_drop_rate);
+document.getElementById("precision_input").addEventListener("input", set_precision);
+document.getElementById("lvl_coffres_input").addEventListener("input", compute_drop_rate);
+document.getElementById("tours_coffres_input").addEventListener("input", compute_drop_rate);
 compute_drop_rate()
