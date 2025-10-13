@@ -3,52 +3,28 @@
 <html lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title>First webpage</title>
+		<title>MGK Droprates</title>
 		<link rel="stylesheet" type="text/css" href="style.css">
-		<script defer src="restrict.js"></script>
         <script defer src="compute_droprate.js"></script>
+        <script defer src="restrict.js"></script>
 	</head>
 	<body>
+		<div id="nbr_players">
+			<label id="nbre_players_input_label" for="nbre_players_input">Nombre de joueurs</label>
+			<select id="nbre_players_input" type="select">
+				<option value="">--Nombre de joueurs--</option>
+			</select>	
+		</div>
 		<div id="pp">
-			<label for="pp1">Prospection j1</label>
-			<input id="pp1" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp1_coffre" type="checkbox"/>
-			<br>
-			<label for="pp2">Prospection j2</label>
-			<input id="pp2" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp2_coffre" type="checkbox"/>
-			<br>
-			<label for="pp3">Prospection j3</label>
-			<input id="pp3" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp3_coffre" type="checkbox"/>
-			<br>
-			<label for="pp4">Prospection j4</label>
-			<input id="pp4" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp4_coffre" type="checkbox"/>
-			<br>
-			<label for="pp5">Prospection j5</label>
-			<input id="pp5" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp5_coffre" type="checkbox"/>
-			<br>
-			<label for="pp6">Prospection j6</label>
-			<input id="pp6" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp6_coffre" type="checkbox"/>
-			<br>
-			<label for="pp7">Prospection j7</label>
-			<input id="pp7" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp7_coffre" type="checkbox"/>
-			<br>
-			<label for="pp8">Prospection j8</label>
-			<input id="pp8" class="minmaxrestricted" name="pp" type="number" value="100" min="0" max="999"/>
-			<span>+ coffre ?</span>
-			<input id="pp8_coffre" type="checkbox"/>
+			<template id="template_pp_x">
+				<div id="pp_x">
+					<label id= pp_input_label_x for="pp_input_x">Prospection jx</label>
+					<input id="pp_input_x" class="minmaxrestricted" type="number" value="100" min="0" max="999"/>
+					<span>+ coffre ?</span>
+					<input id="pp_coffre_checkbox_x" type="checkbox"/>
+					<span id="pp_result_x"></span>
+				<div>
+			</template>
 		</div>
 		<div id="rate">
 			<label for="base_rate">Taux de base</label>
@@ -56,7 +32,7 @@
 			<span>%</span>
 		</div>
 		<div id="qty">
-			<label for="qmax">Quantit&#233;</label>
+			<label for="qmax">Quantit&#233; max</label>
 			<input id="qmax" class="minmaxrestricted" type="number" value="1" min="1"/>
 		</div>
 		<div>
