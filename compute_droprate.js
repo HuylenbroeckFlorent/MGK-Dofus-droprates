@@ -117,6 +117,13 @@ function compute_drop_rate() {
         console.log("Drop "+q+" item(s) : "+q_search(root, q)*100+"%"); // probabilité que 0<=q<=qmax objets soient trouvés.
     }
     console.log("Nombre moyen d'item drop:"+ total)
+
+    var result_span = document.getElementById("total")
+    if (total > 1 || total == 0) {
+        result_span.textContent = total.toFixed(PRECISION) + " items loot par combat en moyenne.";
+    } else {
+        result_span.textContent = "Un item loot en moyenne tous les "+ (Math.round(1/total)) + " combats.";
+    } 
 }
 
 // parent    : noeud parent
