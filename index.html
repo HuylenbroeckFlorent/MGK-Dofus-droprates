@@ -11,16 +11,18 @@
 	</head>
 	<body>
 		<div id="nbr_players">
-			<label id="nbre_players_input_label" for="nbre_players_input">Nombre de joueurs</label>
+			<!-- <label id="nbre_players_input_label" for="nbre_players_input">Nombre de joueurs</label>
 			<select id="nbre_players_input" type="select">
 				<option value="">--Nombre de joueurs--</option>
-			</select>	
+			</select>	 -->
 		</div>
 		<div id="pp">
 			<template id="template_pp_x">
 				<div id="pp_x">
+                    <img class="inline_icon" src="images/pp128.png"/>
 					<label id= pp_input_label_x for="pp_input_x">Prospection jx</label>
 					<input id="pp_input_x" class="minmaxrestricted" type="number" value="100" min="0" max="999"/>
+                    <img class="inline_icon" src="images/casket.png"/>
 					<label id="pp_coffre_input_label_x" for="pp_coffre_input_x">+ coffre ?</label>
 					<input id="pp_coffre_input_x" type="checkbox"/>
 					<span id="pp_result_x"></span>
@@ -52,6 +54,9 @@
 			<input id="tours_coffres_input" type="range" value="1" min="1" max="5" oninput="this.nextElementSibling.value = this.value">
             <output>1</output>
 		</div>
+        <div id="results">
+            <tr></tr>
+        </div>
         <div>
             <span id="total"></span>
         </div>

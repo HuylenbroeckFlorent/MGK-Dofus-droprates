@@ -5,12 +5,13 @@ const BOOST_COFFRES = [3, 8, 10.5, 15.5, 15.5, 40.5]
 const MAX_BOOST_COFFRES = [3, 3, 3, 3, 5, 5]
 
 function create_nbr_players_options() {
-    nbre_players_select = document.getElementById("nbre_players_input")
-    var options = ""
+    nbre_players_select = document.getElementById("nbr_players")
+    var radio_buttons = "<fieldset><legend>Nombre de joueurs</legend>\n<div>"
     for (var i=1; i<=8; i++) {
-        options += "<option value="+i+((NBRE_JOUEURS == i)?" selected":"")+">"+i+"</options>\n"
+        radio_buttons += "<label for=\"this.nextElementSibling\">" + i + "</label>"
+        radio_buttons += "<input type=\"radio\" name=\"nbr_players_radio\" value="+i+" "+((NBRE_JOUEURS == i)?" checked":"")+">\n"
     }
-    nbre_players_select.innerHTML = options;
+    nbre_players_select.innerHTML = radio_buttons;
     nbre_players_select.addEventListener("change", set_nbr_players);
 }
 
@@ -18,12 +19,12 @@ function set_nbr_players(input) {
     var tmp_kept = NBRE_JOUEURS;
     NBRE_JOUEURS = parseInt(input.target.value);
     create_pp_content(Math.min(tmp_kept, NBRE_JOUEURS));
-    compute_drop_rate();
+    collect_drop_data();
 }
 
 function set_precision(input) {
     PRECISION = input.target.value;
-    compute_drop_rate();
+    collect_drop_data();
 }
 
 function create_pp_content(kept = 0) {
@@ -57,7 +58,7 @@ function create_pp_content(kept = 0) {
             }
 
             if (templ_clone_el.tagName === 'INPUT') {
-                templ_clone_el.addEventListener("input", compute_drop_rate);
+                templ_clone_el.addEventListener("input", collect_drop_data);
             }
         }
         templ_clone.querySelector('[id^="pp_input_label_"]').textContent = "Propsection j" + (i+1);
@@ -65,25 +66,27 @@ function create_pp_content(kept = 0) {
     }
 }
 
-function compute_drop_rate() {
-    pp_els = document.querySelectorAll('input[id^="pp_input_"]')
-    coffre_els = document.querySelectorAll('input[id^="pp_coffre_input_"]')
-    qmax = parseInt(document.getElementById("qmax").value);
-    base_rate = parseFloat(document.getElementById("base_rate").value)/100;
-    lvl_coffres = parseInt(document.getElementById("lvl_coffres_input").value)
-    nboosts_coffres = parseInt(document.getElementById("tours_coffres_input").value)
+function collect_drop_data() {
 
-    var boost_coffres = BOOST_COFFRES[lvl_coffres-1] * Math.min(MAX_BOOST_COFFRES[lvl_coffres-1], nboosts_coffres)
+    var pp_els = document.querySelectorAll('input[id^="pp_input_"]')
+    var coffre_els = document.querySelectorAll('input[id^="pp_coffre_input_"]')
 
-    console.log(boost_coffres)
-
+    var qmax = parseInt(document.getElementById("qmax").value);
     if (qmax == 0) {
         qmax = NBRE_JOUEURS;
     }
 
+    var base_rate = parseFloat(document.getElementById("base_rate").value)/100;
+
+    var lvl_coffres = parseInt(document.getElementById("lvl_coffres_input").value)
+    var nboosts_coffres = parseInt(document.getElementById("tours_coffres_input").value)
+    var boost_coffres = BOOST_COFFRES[lvl_coffres-1] * Math.min(MAX_BOOST_COFFRES[lvl_coffres-1], nboosts_coffres)
+
+
+
     pps = [];
     for (var pp of pp_els) {
-        pps.push([pp.id.substr(pp.id.length - 1), Math.min(1, base_rate*parseInt(pp.value)/100)]);
+        pps.push(["joueur_"+pp.id.substr(pp.id.length - 1), Math.min(1, base_rate*parseInt(pp.value)/100)]);
     }
 
     for (var coffre of coffre_els) {
@@ -92,38 +95,88 @@ function compute_drop_rate() {
         }
     }
 
-    pps.sort(function compare_pp(pp_el_1, pp_el_2) {
-        if (pp_el_1[1] > pp_el_2[1]) {
+    return [pps, qmax]
+
+    // var root = tree(new Node(null, 1, 0), pps, qmax, 0);
+}
+
+function compute_droprate(pp_array, qmax) {
+
+    pp_array.sort(function compare_pp(a, b) {
+        if (a[1] > b[1]) {
             return -1;
-        } else if (pp_el_1[1] < pp_el_2[1]) {
+        } else if (a[1] < b[1]) {
             return 1;
         } else {
             return 0;
         }
     });
 
-    var root = tree(new Node(null, 1, 0), pps, qmax, 0);
+    var root = tree(new Node(null, 1, 0), pp_array, qmax, 0);
 
-    for (var result_el of document.querySelectorAll('span[id^="pp_result"]')) {
-        result_el.textContent = "";
-    }
-    for (var j=0; j < pps.length; j++) {
-        document.getElementById("pp_result_"+pps[j][0]).textContent = (j_search(root, j, 0)*100).toFixed(PRECISION)+"%"
+    var res = [];
+
+    var j_res = [];
+    for (var j=0; j < pp_array.length; j++) {
+        j_res.push([pp_array[j][0], j_search(root, j, 0)])
     }
 
-    var total = 0;
-    for (var q=0; q <= Math.min(qmax, NBRE_JOUEURS); q++) {
-        total += q*q_search(root, q)
-        console.log("Drop "+q+" item(s) : "+q_search(root, q)*100+"%"); // probabilité que 0<=q<=qmax objets soient trouvés.
-    }
-    console.log("Nombre moyen d'item drop:"+ total)
+    j_res.sort(function compare_j_res(a, b) {
+        index_a = parseInt(a[0].substr(a[0].length - 1))
+        index_b = parseInt(b[0].substr(b[0].length - 1))
 
-    var result_span = document.getElementById("total")
-    if (total > 1 || total == 0) {
-        result_span.textContent = total.toFixed(PRECISION) + " items loot par combat en moyenne.";
-    } else {
-        result_span.textContent = "Un item loot en moyenne tous les "+ (Math.round(1/total)) + " combats.";
-    } 
+        console.log(index_a)
+        console.log(index_b)
+
+        if (index_a < index_b) {
+            return -1
+        } else if (index_a > index_b) {
+            return 1
+        } else {
+            if (a[0] < b[0]) {
+                return 1
+            } else if (a[0] > b[0]) {
+                return -1
+            } else {
+                return 0
+            }
+        }
+    });
+
+    var q_res = [];
+    for (var q=0; q <= Math.min(qmax, pps.length); q++) {
+        q_res.push(q_search(root, q))
+    }
+
+    return [j_res, q_res]
+}
+
+function display_results(res) {
+    // for (var result_el of document.querySelectorAll('span[id^="pp_result"]')) {
+    //     result_el.textContent = "";
+    // }
+
+    // var j_res = [];
+    // for (var j=0; j < pps.length; j++) {
+    //     j_res.push([pps[j][0], j_search(root, j, 0)*100])
+    //     // document.getElementById("pp_result_"+pps[j][0]).textContent = (j_search(root, j, 0)*100).toFixed(PRECISION)+"%"
+    // }
+
+    // console.log(compute_droprate(pps, qmax));
+
+    // var total = 0;
+    // for (var q=0; q <= Math.min(qmax, NBRE_JOUEURS+ncoffres); q++) {
+    //     total += q*q_search(root, q)
+    //     console.log("Drop "+q+" item(s) : "+q_search(root, q)*100+"%"); // probabilité que 0<=q<=qmax objets soient trouvés.
+    // }
+    // console.log("Nombre moyen d'item drop:"+ total)
+
+    // var result_span = document.getElementById("total")
+    // if (total > 1 || total == 0) {
+    //     result_span.textContent = total.toFixed(PRECISION) + " items loot par combat en moyenne.";
+    // } else {
+    //     result_span.textContent = "Un item loot en moyenne tous les "+ (Math.round(1/total)) + " combats.";
+    // } 
 }
 
 // parent    : noeud parent
@@ -192,9 +245,11 @@ function q_search(node, q) {
 
 create_nbr_players_options()
 create_pp_content()
-document.getElementById("base_rate").addEventListener("input", compute_drop_rate);
-document.getElementById("qmax").addEventListener("input", compute_drop_rate);
+document.getElementById("base_rate").addEventListener("input", collect_drop_data);
+document.getElementById("qmax").addEventListener("input", collect_drop_data);
 document.getElementById("precision_input").addEventListener("input", set_precision);
-document.getElementById("lvl_coffres_input").addEventListener("input", compute_drop_rate);
-document.getElementById("tours_coffres_input").addEventListener("input", compute_drop_rate);
-compute_drop_rate()
+document.getElementById("lvl_coffres_input").addEventListener("input", collect_drop_data);
+document.getElementById("tours_coffres_input").addEventListener("input", collect_drop_data);
+collect_drop_data()
+compute_droprate()
+display_results()

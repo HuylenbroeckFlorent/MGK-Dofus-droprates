@@ -1,3 +1,12 @@
+body {
+ background-color: rgb(39, 37, 37);   
+}
+
 div {
-	color: blue;
+	color: white;
+}
+
+.inline_icon {
+    height: 1em; 
+    width: 1em;
 }
