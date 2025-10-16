@@ -173,7 +173,7 @@ function display_results() {
             j_type = "<img src=\"images/casket.png\" class=\"inline_icon\"/> Coffre";
         }
 
-        j_results_array_inner += "<tr><td>"+j_type+" "+j_index+"</td><td>"+(result*100).toFixed(PRECISION)+"%</td></tr>";
+        j_results_array_inner += "<tr><td>"+j_type+" "+j_index+"</td><td>"+parseFloat((result*100).toFixed(PRECISION))+"%</td></tr>";
     }
 
     j_results_array.innerHTML = j_results_array_inner + "</tbody>";
@@ -184,14 +184,14 @@ function display_results() {
     for (var q=0; q <= QMAX; q++) {
         var result = RES[1][q];
         q_average += q*result;
-        q_results_array_inner += "<tr><td>"+q+"</td><td>"+(result*100).toFixed(PRECISION)+"%</td></tr>";
+        q_results_array_inner += "<tr><td>"+q+"</td><td>"+parseFloat((result*100).toFixed(PRECISION))+"%</td></tr>";
     }
 
     q_results_array.innerHTML = q_results_array_inner + "</tbody>";
 
     var q_average_span = document.getElementById("q_average");
     if (q_average > 1 || q_average == 0) {
-        q_average_span.innerHTML = "<b>"+q_average.toFixed(PRECISION) + " items loot par combat en moyenne.</b>";
+        q_average_span.innerHTML = "<b>"+parseFloat(q_average.toFixed(PRECISION)) + " items loot par combat en moyenne.</b>";
     } else {
         q_average_span.innerHTML = "<b>Un item loot en moyenne tous les "+ (Math.round(1/q_average)) + " combats.</b>";
     } 
