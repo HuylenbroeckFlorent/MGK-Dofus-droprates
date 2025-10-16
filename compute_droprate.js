@@ -72,11 +72,6 @@ function collect_drop_data() {
     var pp_els = document.querySelectorAll('input[id^="pp_input_"]');
     var coffre_els = document.querySelectorAll('input[id^="pp_coffre_input_"]');
 
-    QMAX = parseInt(document.getElementById("qmax").value);
-    if (QMAX == 0) {
-        QMAX = NBRE_JOUEURS;
-    }
-
     var base_rate = parseFloat(document.getElementById("base_rate").value)/100;
 
     var PP_COFFRES = 300;
@@ -96,6 +91,11 @@ function collect_drop_data() {
         if (coffre.checked) {
             PP_ARRAY.push(["coffre_"+coffre.id.substr(coffre.id.length - 1), Math.min(HARDCAP, base_rate*(PP_COFFRES+boost_coffres)/100)]);
         }
+    }
+
+    QMAX = parseInt(document.getElementById("qmax").value);
+    if (QMAX == 0) {
+        QMAX = PP_ARRAY.length;
     }
 
     compute_droprate();
