@@ -10,3 +10,15 @@ div {
     height: 1em; 
     width: 1em;
 }
+
+th, td {
+  padding: 5px;
+  text-align: left;
+}
+
+/*th, td {
+  border-bottom: 1px solid #ddd;
+}*/
+
+tr:nth-child(even) {background-color: rgb(47, 45, 45);}
+tr:hover {background-color: coral;}

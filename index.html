@@ -10,12 +10,7 @@
         <script defer src="restrict.js"></script>
 	</head>
 	<body>
-		<div id="nbr_players">
-			<!-- <label id="nbre_players_input_label" for="nbre_players_input">Nombre de joueurs</label>
-			<select id="nbre_players_input" type="select">
-				<option value="">--Nombre de joueurs--</option>
-			</select>	 -->
-		</div>
+		<div id="nbr_players"></div>
 		<div id="pp">
 			<template id="template_pp_x">
 				<div id="pp_x">
@@ -55,10 +50,9 @@
             <output>1</output>
 		</div>
         <div id="results">
-            <tr></tr>
-        </div>
-        <div>
-            <span id="total"></span>
+            <table id="j_results"></table>
+            <table id="q_results"></table>
+            <span id="q_average"></span>
         </div>
 	</body>
 </html>
