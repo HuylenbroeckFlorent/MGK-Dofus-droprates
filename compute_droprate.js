@@ -164,7 +164,7 @@ function display_results() {
         var j = j_result[0];
         var result = j_result[1];
 
-        var j_index = j.substr(j.length - 1);
+        var j_index = parseInt(j.substr(j.length - 1)) + 1;
         var j_type = j.substr(0, j.length -2);
 
         if (j_type == 'joueur') {
