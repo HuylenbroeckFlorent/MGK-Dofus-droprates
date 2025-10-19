@@ -8,15 +8,14 @@
 		<link rel="stylesheet" type="text/css" href="style.css">
         <script defer src="compute_droprate.js"></script>
         <script defer src="restrict.js"></script>
-        <script defer src="plackett_luce.js"></script>
 	</head>
 	<body>
 		<div id="nbr_players"></div>
 		<div id="pp">
 			<template id="template_pp_x">
 				<div id="pp_x">
+					<label id= pp_input_label_x for="pp_input_x">Joueur x</label>
                     <img class="inline_icon" src="images/pp128.png"/>
-					<label id= pp_input_label_x for="pp_input_x">Prospection jx</label>
 					<input id="pp_input_x" class="minmaxrestricted" type="number" value="100" min="0" max="999"/>
                     <img class="inline_icon" src="images/casket.png"/>
 					<label id="pp_coffre_input_label_x" for="pp_coffre_input_x">+ coffre ?</label>
