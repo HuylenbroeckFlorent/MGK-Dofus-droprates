@@ -96,7 +96,7 @@ function collect_drop_data() {
 
     BASE_RATE = parseFloat(document.getElementById("base_rate_input").value)/100;
 
-    RES = PLSM();
+    RES = PL_FSM();
     display_results();
 }
 
@@ -136,10 +136,15 @@ function display_results() {
     } 
 }
 
-function PLSM() {
+/**
+ * Plackett-Luce inspired finite state machine.
+ * 
+ * 
+ */
+function PL_FSM() {
 	const w_length = PP_ARRAY.length;
 	const w_part_count = 1 << w_length;
-	const p = PP_ARRAY.map(pp => Math.min(HARDCAP, BASE_RATE * (pp/100)));
+	const p = PP_ARRAY.map(weight => Math.min(HARDCAP, BASE_RATE * (weight/100)));
 
 	// DP[k][mask] flattened into a single Float64Array: index = k * w_part_count + mask
 	const DP = new Float64Array((QMAX + 1) * w_part_count);
