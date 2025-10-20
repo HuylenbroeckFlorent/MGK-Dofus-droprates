@@ -55,7 +55,7 @@ function create_pp_content(kept = 0) {
     for (var i=kept; i<NBRE_JOUEURS; i++) {
         pp_input_template_clone = pp_input_template.content.cloneNode(true);
         pp_input_template_clone.querySelector('[class="pp_player_name"]').textContent = "Joueur " + (i+1);
-        pp_input_template_clone.querySelector('input[class^="pp_input_"]').addEventListener("input", collect_drop_data);
+        pp_input_template_clone.querySelectorAll('input[class^="pp_input_"]').forEach((el) => el.addEventListener("input", collect_drop_data));
         pp_inputs_root.append(pp_input_template_clone);
     }
 }

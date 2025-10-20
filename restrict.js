@@ -7,8 +7,4 @@ function restrictNumberInput(input) {
         input.target.value = this.max;
     }
 }
-pp_els = document.getElementsByClassName("minmaxrestricted")
-
-for (var el of pp_els) {
-    el.addEventListener("input", restrictNumberInput);
-}
+pp_els = document.querySelectorAll(".minmaxrestricted").forEach((el) => el.addEventListener("input", restrictNumberInput));
