@@ -5,7 +5,7 @@ const HARDCAP = 0.95;
 
 var PP_ARRAY, BASE_RATE, QMAX, NAMES, RES;
 
-function create_nbr_players_options() {
+function init_nbr_players_options() {
     nbre_players_select = document.getElementById("nbr_players")
     var radio_buttons = "<fieldset><legend>Nombre de joueurs</legend>\n<div>"
     for (var i=1; i<=8; i++) {
@@ -21,6 +21,7 @@ function set_nbr_players(input) {
     NBRE_JOUEURS = parseInt(input.target.value);
     create_pp_content(Math.min(tmp_kept, NBRE_JOUEURS));
     collect_drop_data();
+    set_qmax_bounds();
 }
 
 function set_precision(input) {
@@ -28,13 +29,22 @@ function set_precision(input) {
     display_results(RES);
 }
 
+function set_qmax_bounds() {
+    var qmax_input = document.getElementById("qmax_input");
+    var updated_q = (parseInt(qmax_input.value) > PP_ARRAY.length) ? PP_ARRAY.length:parseInt(qmax_input.value);
+
+    qmax_input.value = updated_q;
+    qmax_input.nextElementSibling.value = updated_q;
+    qmax_input.max = PP_ARRAY.length;
+}
+
 function create_pp_content(kept = 0) {
 
-    templ = document.getElementById("template_pp_x");
-    pp_root = document.getElementById("pp")
+    var pp_input_template = document.getElementById("pp_input_template");
+    var pp_inputs_root = document.getElementById("pp_inputs")
 
     var tmp_kept = kept;
-    for (var el of pp_root.querySelectorAll("div#pp > div")) {
+    for (var el of pp_inputs_root.querySelectorAll("div.pp_input")) {
         if (tmp_kept > 0) {
             tmp_kept--;
         } else {
@@ -43,33 +53,16 @@ function create_pp_content(kept = 0) {
     }
 
     for (var i=kept; i<NBRE_JOUEURS; i++) {
-
-        templ_clone = templ.content.cloneNode(true);
-        templ_clone_div = templ_clone.getElementById("pp_x");
-        templ_clone_div.id = templ_clone_div.id.replace(/x$/, i.toString());
-
-        for (var templ_clone_el of templ_clone_div.children) {
-
-            if (templ_clone_el.hasAttribute("id")) { 
-                templ_clone_el.id = templ_clone_el.id.replace(/x$/, i.toString());
-            }
-
-            if (templ_clone_el.tagName === 'LABEL') {
-                templ_clone_el.htmlFor = templ_clone_el.htmlFor.replace(/x$/, i.toString());
-            }
-
-            if (templ_clone_el.tagName === 'INPUT') {
-                templ_clone_el.addEventListener("input", collect_drop_data);
-            }
-        }
-        templ_clone.querySelector('[id^="pp_input_label_"]').textContent = "Joueur " + (i+1);
-        pp_root.append(templ_clone);
+        pp_input_template_clone = pp_input_template.content.cloneNode(true);
+        pp_input_template_clone.querySelector('[class="pp_player_name"]').textContent = "Joueur " + (i+1);
+        pp_input_template_clone.querySelector('input[class^="pp_input_"]').addEventListener("input", collect_drop_data);
+        pp_inputs_root.append(pp_input_template_clone);
     }
 }
 
 function collect_drop_data() {
 
-    var pp_input_divs = document.querySelectorAll('div[id^="pp_"]');
+    var pp_input_divs = document.querySelectorAll('div.pp_input');
 
     var PP_COFFRES = 300;
     const BOOST_COFFRES = [3, 8, 10.5, 15.5, 15.5, 40.5];
@@ -82,24 +75,26 @@ function collect_drop_data() {
     PP_ARRAY = [];
     NAMES = [];
     for (var pp_input_div of pp_input_divs) {
-        var player_name = pp_input_div.querySelector(':scope label[id^="pp_input_label"]').textContent;
-        var pp_input = pp_input_div.querySelector(':scope input[id^="pp_input_"]');
+        var player_name = pp_input_div.querySelector(':scope span.pp_player_name').textContent;
+        var pp_input = pp_input_div.querySelector(':scope input.pp_input_player');
         PP_ARRAY.push(parseInt(pp_input.value));
-        NAMES.push(player_name);
-        var pp_input_coffre = pp_input_div.querySelector(':scope input[id^="pp_coffre_input_"]');
+        
+        var pp_input_coffre = pp_input_div.querySelector(':scope input.pp_input_coffre');
         if (pp_input_coffre.checked) {
+            NAMES.push("<img class=\"inline_icon\" src=\"images/head_enu.png\"/> "+player_name);
             PP_ARRAY.push(PP_COFFRES+boost_coffres)
             NAMES.push("<img class=\"inline_icon\" src=\"images/casket.png\"/> Coffre de "+player_name);
+        } else {
+            NAMES.push("<img class=\"inline_icon\" src=\"images/head_cra.png\"/> "+player_name);
         }
-
     }
 
-    QMAX = parseInt(document.getElementById("qmax").value);
+    QMAX = parseInt(document.getElementById("qmax_input").value);
     if (QMAX == 0) {
         QMAX = PP_ARRAY.length;
     }
 
-    BASE_RATE = parseFloat(document.getElementById("base_rate").value)/100;
+    BASE_RATE = parseFloat(document.getElementById("base_rate_input").value)/100;
 
     RES = PLSM();
     display_results();
@@ -112,19 +107,19 @@ function display_results() {
     }
 
     var j_results_array = document.getElementById("j_results");
-    var j_results_array_inner = "<thead><tr><th scope=\"col\">Personnage</th><th scope=\"col\">Taux individuel</th></tr></thead><tbody>";
+    var j_results_array_inner = "<thead><tr><th scope=\"col\">Taux de drop par personnage</th><th scope=\"col\">Taux individuel</th></tr></thead><tbody>";
     for (var j=0; j<RES[0].length; j++) {
         var j_name = NAMES[j];
         var j_result = RES[0][j];
 
-        j_results_array_inner += "<tr><td>"+j_name+"</td><td>"+parseFloat((j_result*100).toFixed(PRECISION))+"%</td></tr>";
+        j_results_array_inner += "<tr><td width:32em;>"+j_name+"</td><td width:12em;>"+parseFloat((j_result*100).toFixed(PRECISION))+"%</td></tr>";
     }
 
     j_results_array.innerHTML = j_results_array_inner + "</tbody>";
 
     var q_average = 0;
     var q_results_array = document.getElementById("q_results");
-    var q_results_array_inner = "<thead><tr><th scope=\"col\">Quantit&#233;</th><th scope=\"col\">Taux global</th></tr></thead><tbody>";
+    var q_results_array_inner = "<thead><tr><th scope=\"col\">Taux de drop par quantit&#233;</th><th scope=\"col\">Taux global</th></tr></thead><tbody>";
     for (var q=0; q <= QMAX; q++) {
         var result = RES[1][q];
         q_average += q*result;
@@ -137,7 +132,7 @@ function display_results() {
     if (q_average > 1 || q_average == 0) {
         q_average_span.innerHTML = "<b>"+parseFloat(q_average.toFixed(PRECISION)) + " items loot par combat en moyenne.</b>";
     } else {
-        q_average_span.innerHTML = "<b>Un item loot en moyenne tous les "+ (Math.round(1/q_average)) + " combats.</b>";
+        q_average_span.innerHTML = "<b>Un item loot en moyenne tous les ~"+ (Math.round(1/q_average)) + " combats.</b>";
     } 
 }
 
@@ -216,10 +211,10 @@ function bit_count(x) {
 	return (((x + (x >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
 }
 
-create_nbr_players_options()
+init_nbr_players_options()
 create_pp_content()
-document.getElementById("base_rate").addEventListener("input", collect_drop_data);
-document.getElementById("qmax").addEventListener("input", collect_drop_data);
+document.getElementById("base_rate_input").addEventListener("input", collect_drop_data);
+document.getElementById("qmax_input").addEventListener("input", collect_drop_data);
 document.getElementById("precision_input").addEventListener("input", set_precision);
 document.getElementById("lvl_coffres_input").addEventListener("input", collect_drop_data);
 document.getElementById("tours_coffres_input").addEventListener("input", collect_drop_data);

@@ -11,29 +11,15 @@
 	</head>
 	<body>
 		<div id="nbr_players"></div>
-		<div id="pp">
-			<template id="template_pp_x">
-				<div id="pp_x">
-					<label id= pp_input_label_x for="pp_input_x">Joueur x</label>
-                    <img class="inline_icon" src="images/pp128.png"/>
-					<input id="pp_input_x" class="minmaxrestricted" type="number" value="100" min="0" max="999"/>
-                    <img class="inline_icon" src="images/casket.png"/>
-					<label id="pp_coffre_input_label_x" for="pp_coffre_input_x">+ coffre ?</label>
-					<input id="pp_coffre_input_x" type="checkbox"/>
-					<span id="pp_result_x"></span>
-                    <span id="pp_result_coffre_x"></span>
-				<div>
-			</template>
-		</div>
 		<div id="rate">
 			<label for="base_rate">Taux de base</label>
-			<input id="base_rate" class="minmaxrestricted" type="numer" value="5" min="0" max="100"/>
+			<input id="base_rate_input" class="minmaxrestricted" type="numer" value="5" min="0" max="100"/>
 			<span>%</span>
 		</div>
-		<div id="qty">
-			<label for="qmax">Quantit&#233; max</label>
-			<input id="qmax" class="minmaxrestricted" type="number" value="0" min="0"/>
-            <span>(0 = illimit&#233;)</span>
+		<div id="qmax">
+            <label id="qmax_input_label" for="qmax_input">Quantit&#233; max </label><span>(0 = illimit&#233;)</span>
+			<input id="qmax_input" type="range" value="0" min="0" max="4" oninput="this.nextElementSibling.value = this.value">
+            <output>0</output>
 		</div>
 		<div id="precision">
             <label id="precision_input_label" for="precision_input">Pr&#233;cision</label>
@@ -48,6 +34,23 @@
             <label id="tours_coffres_input_label" for="tours_coffres_input">Tours &#233;coul&#233;s de boost des coffres</label>
 			<input id="tours_coffres_input" type="range" value="1" min="1" max="5" oninput="this.nextElementSibling.value = this.value">
             <output>1</output>
+		</div>
+		<div id="pp_inputs">
+			<template id="pp_input_template">
+				<div class="pp_input">
+					<label>
+						<span class="pp_player_name"></span> 
+						<img class="inline_icon" src="images/pp128.png"/>
+						<input class="minmaxrestricted pp_input_player" type="number" value="100" min="0" max="999"/>
+					</label>
+                    
+					<label>
+						Coffre ? <img class="inline_icon" src="images/casket.png"/>
+						<input class="pp_input_coffre" type="checkbox"/>
+					</label>
+				<div>
+			</template>
+			<template id="pp_input_template_advanced"><!-- TODO --></template>
 		</div>
         <div id="results">
             <table id="j_results"></table>
