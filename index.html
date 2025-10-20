@@ -35,25 +35,37 @@
 			<input id="tours_coffres_input" type="range" value="1" min="1" max="5" oninput="this.nextElementSibling.value = this.value">
             <output>1</output>
 		</div>
-		<div id="pp_inputs">
-			<template id="pp_input_template">
-				<div class="pp_input">
-					<label>
-						<span class="pp_player_name"></span> 
-						<img class="inline_icon" src="images/pp128.png"/>
-						<input class="pp_input_player minmaxrestricted" type="number" value="100" min="0" max="999"/>
-					</label>
-                    
-					<label>
-						Coffre ? <img class="inline_icon" src="images/casket.png"/>
-						<input class="pp_input_coffre" type="checkbox"/>
-					</label>
-				<div>
-			</template>
-			<template id="pp_input_template_advanced"><!-- TODO --></template>
-		</div>
+        <div id="players_data">
+            <table id="players_data_table">
+                <template id="player_input_template">
+                    <tbody>
+                        <tr>
+                            <td class="player_name"><!-- player name --></td>
+                            <td class="player_pp">
+                                <label>
+                                    <input name="player_pp_input" class="minmaxrestricted" type="number" value="100" min="0" max="999"/>
+                                    <img class="inline_icon" src="images/pp128.png"/>
+                                </label>
+                            </td>
+                            <td class="player_has_casket">
+                                <label>
+                                    <input name="player_has_casket_input" type="checkbox"/>
+                                    <img class="inline_icon" src="images/casket.png"/>
+                                </label>
+                            </td>
+                            <td class="player_result"></td>
+                        </tr>
+                    </tbody>
+                </template>
+                <template id="casket_input_template">
+                    <tr>
+                        <td colspan="3"><!-- casket name --></td>
+                        <td class="player_result"></td>
+                    </tr>
+                </template>
+            </table>
+        </div>
         <div id="results">
-            <table id="j_results"></table>
             <table id="q_results"></table>
             <span id="q_average"></span>
         </div>

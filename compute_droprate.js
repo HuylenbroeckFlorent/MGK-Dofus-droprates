@@ -19,7 +19,7 @@ function init_nbr_players_options() {
 function set_nbr_players(input) {
     var tmp_kept = NBRE_JOUEURS;
     NBRE_JOUEURS = parseInt(input.target.value);
-    create_pp_content(Math.min(tmp_kept, NBRE_JOUEURS));
+    create_player_array(Math.min(tmp_kept, NBRE_JOUEURS));
     collect_drop_data();
     set_qmax_bounds();
 }
@@ -38,13 +38,12 @@ function set_qmax_bounds() {
     qmax_input.max = PP_ARRAY.length;
 }
 
-function create_pp_content(kept = 0) {
-
-    var pp_input_template = document.getElementById("pp_input_template");
-    var pp_inputs_root = document.getElementById("pp_inputs")
+function create_player_array(kept = 0) {
+    var player_input_template = document.getElementById("player_input_template");
+    var players_data_table = document.getElementById("players_data_table");
 
     var tmp_kept = kept;
-    for (var el of pp_inputs_root.querySelectorAll("div.pp_input")) {
+    for (var el of players_data_table.querySelectorAll("tbody")) {
         if (tmp_kept > 0) {
             tmp_kept--;
         } else {
@@ -53,16 +52,32 @@ function create_pp_content(kept = 0) {
     }
 
     for (var i=kept; i<NBRE_JOUEURS; i++) {
-        pp_input_template_clone = pp_input_template.content.cloneNode(true);
-        pp_input_template_clone.querySelector('[class="pp_player_name"]').textContent = "Joueur " + (i+1);
-        pp_input_template_clone.querySelectorAll('input[class^="pp_input_"]').forEach((el) => el.addEventListener("input", collect_drop_data));
-        pp_inputs_root.append(pp_input_template_clone);
+        player_input_template_clone = player_input_template.content.cloneNode(true);
+        player_input_template_clone.querySelector('[class="player_name"]').textContent = "Joueur " + (i+1);
+        player_input_template_clone.querySelectorAll('input[name="player_pp_input"]').forEach((el) => el.addEventListener("input", collect_drop_data));
+        player_input_template_clone.querySelectorAll('input[name="player_has_casket_input"]').forEach((el) => el.addEventListener("input", insert_casket_row));
+        players_data_table.append(player_input_template_clone);
     }
+}
+
+function insert_casket_row(input) {
+    var input_el = input.target;
+    var closest_tbody = input_el.closest("tbody");
+    if (input_el.checked) {
+        var casket_row_template = document.getElementById("casket_input_template")
+        var casket_row_template_clone = casket_row_template.content.cloneNode(true);
+        var casket_name = "Coffre de " + closest_tbody.querySelector(".player_name").textContent;
+        casket_row_template_clone.querySelector("td").innerHTML = '<img class="inline_icon" src="images/casket.png"/> '+casket_name;
+        closest_tbody.append(casket_row_template_clone);
+    } else {
+        closest_tbody.querySelectorAll("tr")[1].remove();
+    }
+    collect_drop_data();
 }
 
 function collect_drop_data() {
 
-    var pp_input_divs = document.querySelectorAll('div.pp_input');
+    var pp_input_divs = document.querySelectorAll('#players_data_table tbody');
 
     var PP_COFFRES = 300;
     const BOOST_COFFRES = [3, 8, 10.5, 15.5, 15.5, 40.5];
@@ -75,18 +90,12 @@ function collect_drop_data() {
     PP_ARRAY = [];
     NAMES = [];
     for (var pp_input_div of pp_input_divs) {
-        var player_name = pp_input_div.querySelector(':scope span.pp_player_name').textContent;
-        var pp_input = pp_input_div.querySelector(':scope input.pp_input_player');
+        var pp_input = pp_input_div.querySelector(':scope input[name="player_pp_input"]');
         PP_ARRAY.push(parseInt(pp_input.value));
-        
-        var pp_input_coffre = pp_input_div.querySelector(':scope input.pp_input_coffre');
+        var pp_input_coffre = pp_input_div.querySelector(':scope input[name="player_has_casket_input"]');
         if (pp_input_coffre.checked) {
-            NAMES.push("<img class=\"inline_icon\" src=\"images/head_enu.png\"/> "+player_name);
             PP_ARRAY.push(PP_COFFRES+boost_coffres)
-            NAMES.push("<img class=\"inline_icon\" src=\"images/casket.png\"/> Coffre de "+player_name);
-        } else {
-            NAMES.push("<img class=\"inline_icon\" src=\"images/head_cra.png\"/> "+player_name);
-        }
+        } 
     }
 
     QMAX = parseInt(document.getElementById("qmax_input").value);
@@ -106,16 +115,11 @@ function display_results() {
         return;
     }
 
-    var j_results_array = document.getElementById("j_results");
-    var j_results_array_inner = "<thead><tr><th scope=\"col\">Taux de drop par personnage</th><th scope=\"col\">Taux individuel</th></tr></thead><tbody>";
+    var player_result_tds = document.getElementsByClassName("player_result");
     for (var j=0; j<RES[0].length; j++) {
-        var j_name = NAMES[j];
         var j_result = RES[0][j];
-
-        j_results_array_inner += "<tr><td width:32em;>"+j_name+"</td><td width:12em;>"+parseFloat((j_result*100).toFixed(PRECISION))+"%</td></tr>";
+        player_result_tds[j].textContent = parseFloat((j_result*100).toFixed(PRECISION)) + "%";
     }
-
-    j_results_array.innerHTML = j_results_array_inner + "</tbody>";
 
     var q_average = 0;
     var q_results_array = document.getElementById("q_results");
@@ -217,7 +221,7 @@ function bit_count(x) {
 }
 
 init_nbr_players_options()
-create_pp_content()
+create_player_array()
 document.getElementById("base_rate_input").addEventListener("input", collect_drop_data);
 document.getElementById("qmax_input").addEventListener("input", collect_drop_data);
 document.getElementById("precision_input").addEventListener("input", set_precision);
