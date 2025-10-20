@@ -73,6 +73,7 @@ function insert_casket_row(input) {
         closest_tbody.querySelectorAll("tr")[1].remove();
     }
     collect_drop_data();
+    set_qmax_bounds();
 }
 
 function collect_drop_data() {
