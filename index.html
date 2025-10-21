@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<!-- <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"> -->
 		<title>MGK Droprates</title>
 		<link rel="icon" type="image/x-icon" href="/images/pp128.png">
 		<link rel="stylesheet" type="text/css" href="style.css">
+        <script src="plackett_luce_FSM.js"></script>
         <script defer src="compute_droprate.js"></script>
         <script defer src="restrict.js"></script>
 	</head>
 	<body>
-		<div id="nbr_players"></div>
 		<div id="rate">
-			<label for="base_rate">Taux de base</label>
+			<label for="base_rate">Taux de base </label>
 			<input id="base_rate_input" class="minmaxrestricted" type="number" value="5" min="0" max="100"/>
 			<span>%</span>
 		</div>
+        <div id="challenges">
+            <label for="chall_bonus">Challenges </label>
+			<input id="chall_bonus_input" class="minmaxrestricted" type="number" value="0" min="0" max="999"/>
+            <span>%</span>
+        </div>
 		<div id="qmax">
             <label id="qmax_input_label" for="qmax_input">Quantit&#233; max </label><span>(0 = illimit&#233;)</span>
 			<input id="qmax_input" type="range" value="0" min="0" max="4" oninput="this.nextElementSibling.value = this.value">
@@ -35,20 +40,24 @@
 			<input id="tours_coffres_input" type="range" value="1" min="1" max="5" oninput="this.nextElementSibling.value = this.value">
             <output>1</output>
 		</div>
+        <div id="nbr_players"></div>
         <div id="players_data">
             <table id="players_data_table">
                 <template id="player_input_template">
                     <tbody>
                         <tr>
+                            <td class="player_icon"><image class="inline_icon" src="images/head_cra.png"></td>
                             <td class="player_name"><!-- player name --></td>
                             <td class="player_pp">
                                 <label>
+                                    <span>Prospection </span>
                                     <input name="player_pp_input" class="minmaxrestricted" type="number" value="100" min="0" max="999"/>
                                     <img class="inline_icon" src="images/pp128.png"/>
                                 </label>
                             </td>
                             <td class="player_has_casket">
                                 <label>
+                                    <span>Coffre ? </span>
                                     <input name="player_has_casket_input" type="checkbox"/>
                                     <img class="inline_icon" src="images/casket.png"/>
                                 </label>
@@ -57,9 +66,23 @@
                         </tr>
                     </tbody>
                 </template>
-                <template id="casket_input_template">
+                <template id="casket_input_template_advanced">
                     <tr>
-                        <td colspan="3"><!-- casket name --></td>
+                        <td><img class="inline_icon" src="images/casket.png"/></td>
+                        <td class="casket_name"><!-- casket name --></td>
+                        <td class="player_level">
+                            <label>
+                                <span>Niveau du joueur </span>
+                                <input name="player_level_input" class="minmaxrestricted" type="number" value="200" min="0" max="200"/>
+                            </label>
+                        </td>
+                        <td class="casket_level">
+                            <label>
+                                <span>Niveau du sort </span>
+                                <input name="casket_level_input" type="range" value="6" min="1" max="6" oninput="this.nextElementSibling.value = this.value"/>
+                                <output>6</output>
+                            </label>
+                        </td>
                         <td class="player_result"></td>
                     </tr>
                 </template>

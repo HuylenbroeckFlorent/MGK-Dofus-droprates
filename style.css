@@ -18,6 +18,26 @@ th, td {
   text-align: left;
 }
 
+td.player_name {
+    width: 18ch;
+}
+
+td.player_result {
+    width: 15ch;
+}
+
+td.player_pp, td.player_level {
+    width: 25ch;
+}
+
+td.player_has_casket, td.casket_level {
+    width: 22ch;
+}
+
+input[name="casket_level_input"] {
+    width: 6ch;
+}
+
 /* td:nth-child(odd) {width: 32em;}
 td:nth-child(even) {width: 12em;} */
 

@@ -39,7 +39,6 @@ const HARDCAP = 0.95;
  */
 function PL_FSM(weights, base_rate, qmax) {
 
-
 	const w_length = weights.length;
 	const w_part_count = 1 << w_length;
 	const p_success = weights.map(weight => Math.min(HARDCAP, base_rate * (weight/100)));
@@ -48,6 +47,7 @@ function PL_FSM(weights, base_rate, qmax) {
 	// states[q][mask] flattened into a single Float64Array 
 	// index = q * w_part_count + mask
 	const states = new Float64Array((qmax + 1) * w_part_count);
+
 	// initial state where all weight are in the bitmask and q=O.
 	states[w_part_count - 1] = 1.0;
 
@@ -119,7 +119,7 @@ function PL_FSM(weights, base_rate, qmax) {
 		}
 	}
 
-	// stopping states (k < qmax but mask = 0)
+	// stopping states (k < qmax and mask = 0)
 	for (var k = 0; k <= qmax; k++) {
 		q_res[k] += states[k * w_part_count];
 	}

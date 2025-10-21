@@ -1,8 +1,6 @@
 var NBRE_JOUEURS = 4;
 var PRECISION = 2;
 
-const HARDCAP = 0.95;
-
 var PP_ARRAY, BASE_RATE, QMAX, NAMES, RES;
 
 function init_nbr_players_options() {
@@ -58,35 +56,57 @@ function create_player_array(kept = 0) {
         player_input_template_clone.querySelectorAll('input[name="player_has_casket_input"]').forEach((el) => el.addEventListener("input", insert_casket_row));
         players_data_table.append(player_input_template_clone);
     }
+    color_player_array();
 }
 
 function insert_casket_row(input) {
     var input_el = input.target;
     var closest_tbody = input_el.closest("tbody");
     if (input_el.checked) {
-        var casket_row_template = document.getElementById("casket_input_template")
+        var casket_row_template = document.getElementById("casket_input_template_advanced")
         var casket_row_template_clone = casket_row_template.content.cloneNode(true);
         var casket_name = "Coffre de " + closest_tbody.querySelector(".player_name").textContent;
-        casket_row_template_clone.querySelector("td").innerHTML = '<img class="inline_icon" src="images/casket.png"/> '+casket_name;
+        casket_row_template_clone.querySelector(".casket_name").textContent = casket_name;
+        casket_row_template_clone.querySelectorAll('input').forEach((el) => el.addEventListener("input", collect_drop_data));
+        closest_tbody.querySelector(".player_icon").innerHTML = '<image class="inline_icon" src="images/head_enu.png">';
         closest_tbody.append(casket_row_template_clone);
     } else {
         closest_tbody.querySelectorAll("tr")[1].remove();
+        closest_tbody.querySelector(".player_icon").innerHTML = '<image class="inline_icon" src="images/head_cra.png">';
     }
     collect_drop_data();
     set_qmax_bounds();
+    color_player_array();
+}
+
+function color_player_array() {
+    var player_trs = document.querySelectorAll("#players_data_table tr");
+    for (var n = 0; n < player_trs.length; n++) {
+        if (n % 2 == 0) {
+            player_trs[n].style.setProperty('background-color', 'rgb(39, 37, 37)');
+        } else {
+            player_trs[n].style.setProperty('background-color', 'rgb(47, 45, 45)');
+        }
+    }
+}
+
+function update_casket_levels(input) {
+    var casket_level_inputs = document.querySelectorAll('input[name="casket_level_input"]');
+    var new_value = input.target.value;
+    for (var casket_level_input of casket_level_inputs) {
+        casket_level_input.value = new_value;
+        casket_level_input.nextElementSibling.value = new_value;
+    }
 }
 
 function collect_drop_data() {
 
     var pp_input_divs = document.querySelectorAll('#players_data_table tbody');
-
-    var PP_COFFRES = 300;
+    
     const BOOST_COFFRES = [3, 8, 10.5, 15.5, 15.5, 40.5];
     const MAX_BOOST_COFFRES = [3, 3, 3, 3, 5, 5];
 
-    var lvl_coffres = parseInt(document.getElementById("lvl_coffres_input").value);
     var nboosts_coffres = parseInt(document.getElementById("tours_coffres_input").value);
-    var boost_coffres = BOOST_COFFRES[lvl_coffres-1] * Math.min(MAX_BOOST_COFFRES[lvl_coffres-1], nboosts_coffres);
 
     PP_ARRAY = [];
     NAMES = [];
@@ -95,7 +115,11 @@ function collect_drop_data() {
         PP_ARRAY.push(parseInt(pp_input.value));
         var pp_input_coffre = pp_input_div.querySelector(':scope input[name="player_has_casket_input"]');
         if (pp_input_coffre.checked) {
-            PP_ARRAY.push(PP_COFFRES+boost_coffres)
+            var player_level = parseInt(pp_input_div.querySelector(':scope input[name="player_level_input"]').value);
+            var casket_pp = 100 + player_level
+            var casket_level = pp_input_div.querySelector(':scope input[name="casket_level_input"]').value;
+            casket_pp +=  Math.min(MAX_BOOST_COFFRES[casket_level-1], nboosts_coffres) * BOOST_COFFRES[casket_level-1];
+            PP_ARRAY.push(casket_pp);
         } 
     }
 
@@ -105,8 +129,9 @@ function collect_drop_data() {
     }
 
     BASE_RATE = parseFloat(document.getElementById("base_rate_input").value)/100;
+    BASE_RATE *= (1 + parseFloat(document.getElementById("chall_bonus_input").value)/100);
 
-    RES = PL_FSM();
+    RES = PL_FSM(PP_ARRAY, BASE_RATE, QMAX);
     display_results();
 }
 
@@ -137,82 +162,9 @@ function display_results() {
     if (q_average > 1 || q_average == 0) {
         q_average_span.innerHTML = "<b>"+parseFloat(q_average.toFixed(PRECISION)) + " items loot par combat en moyenne.</b>";
     } else {
-        q_average_span.innerHTML = "<b>Un item loot en moyenne tous les ~"+ (Math.round(1/q_average)) + " combats.</b>";
+        var inverse_q_average = Math.round(1/q_average);
+        q_average_span.innerHTML = "<b>Un item loot en moyenne tous les"+((inverse_q_average==1)?"":` ~${inverse_q_average}`) + " combats.</b>";
     } 
-}
-
-/**
- * Plackett-Luce inspired finite state machine.
- * 
- * 
- */
-function PL_FSM() {
-	const w_length = PP_ARRAY.length;
-	const w_part_count = 1 << w_length;
-	const p = PP_ARRAY.map(weight => Math.min(HARDCAP, BASE_RATE * (weight/100)));
-
-	// DP[k][mask] flattened into a single Float64Array: index = k * w_part_count + mask
-	const DP = new Float64Array((QMAX + 1) * w_part_count);
-	DP[0 * w_part_count + (w_part_count - 1)] = 1.0; // start: all players active, 0 awards
-
-	const j_res = new Float64Array(w_length);
-	const q_res = new Float64Array(QMAX + 1);
-
-	// Precompute PP_ARRAY sums for all masks to avoid recomputing
-	const PP_ARRAYum = new Float64Array(w_part_count);
-	for (let mask = 1; mask < w_part_count; mask++) {
-		let sum = 0;
-		for (let i = 0; i < w_length; i++) if (mask & (1 << i)) sum += PP_ARRAY[i];
-		PP_ARRAYum[mask] = sum;
-	}
-
-	// Iterate masks in decreasing order of bit_count to ensure larger -> smaller transitions
-	const masks = Array.from({ length: w_part_count }, (_, i) => i)
-		.sort((a, b) => bit_count(b) - bit_count(a));
-
-	for (const mask of masks) {
-		const W = PP_ARRAYum[mask];
-		if (W === 0) continue; // skip empty
-
-		for (let k = 0; k <= QMAX; k++) {
-			const idx = k * w_part_count + mask;
-			const mass = DP[idx];
-			if (mass === 0) continue;
-
-			if (k === QMAX) {
-				q_res[k] += mass;
-				continue;
-			}
-
-			// iterate over remaining players
-			for (let i = 0; i < w_length; i++) {
-				if (!(mask & (1 << i))) continue;
-				const pickProb = PP_ARRAY[i] / W;
-				const nextMask = mask & ~(1 << i);
-
-				const failMass = mass * pickProb * (1 - p[i]);
-				const succMass = mass * pickProb * p[i];
-
-				// failure: same k
-				DP[k * w_part_count + nextMask] += failMass;
-
-				// success: add one award
-				j_res[i] += succMass;
-				if (k + 1 === QMAX) {
-					q_res[QMAX] += succMass;
-				} else {
-					DP[(k + 1) * w_part_count + nextMask] += succMass;
-				}
-			}
-		}
-	}
-
-	// Handle stopping states (k < QMAX but mask = 0)
-	for (let k = 0; k <= QMAX; k++) {
-		q_res[k] += DP[k * w_part_count + 0];
-	}
-
-	return [j_res, q_res];
 }
 
 function bit_count(x) {
@@ -224,8 +176,10 @@ function bit_count(x) {
 init_nbr_players_options()
 create_player_array()
 document.getElementById("base_rate_input").addEventListener("input", collect_drop_data);
+document.getElementById("chall_bonus_input").addEventListener("input", collect_drop_data);
 document.getElementById("qmax_input").addEventListener("input", collect_drop_data);
 document.getElementById("precision_input").addEventListener("input", set_precision);
 document.getElementById("lvl_coffres_input").addEventListener("input", collect_drop_data);
+document.getElementById("lvl_coffres_input").addEventListener("input", update_casket_levels);
 document.getElementById("tours_coffres_input").addEventListener("input", collect_drop_data);
 collect_drop_data()
