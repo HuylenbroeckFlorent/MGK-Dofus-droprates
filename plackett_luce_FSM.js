@@ -83,6 +83,7 @@ function PL_FSM(weights, base_rate, qmax) {
 			var idx = k * w_part_count + mask;
 			var mass = states[idx];
 
+			// We can skip the iteration when mass is 0 because it will only get multiplied to 0 again.
 			if (mass === 0) {
 				continue;
 			}
