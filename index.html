@@ -19,12 +19,12 @@
 		<div id="qmax">
             <label id="qmax_input_label" for="qmax_input">Quantit&#233; max </label><span>(0 = illimit&#233;)</span>
 			<input id="qmax_input" type="range" value="0" min="0" max="4" oninput="this.nextElementSibling.value = this.value">
-            <output>0</output>
+            <output>0</output> <!-- https://stackoverflow.com/a/18936328 -->
 		</div>
 		<div id="precision">
             <label id="precision_input_label" for="precision_input">Pr&#233;cision</label>
 			<input id="precision_input" type="range" value="2" min="0" max="10" oninput="this.nextElementSibling.value = this.value">
-            <output>2</output> <!-- https://stackoverflow.com/a/18936328 -->
+            <output>2</output> 
 		</div>
         <div id="boost_coffres">
             <label id="lvl_coffres_input_label" for="lvl_coffres_input">Niveau des coffres</label>
