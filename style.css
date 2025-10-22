@@ -1,8 +1,5 @@
 body {
-  background-color: rgb(39, 37, 37);   
-}
-
-div {
+  background-color: rgb(39, 37, 37);
   color: white;
 }
 
@@ -31,19 +28,57 @@ td.player_pp, td.player_level {
 }
 
 td.player_has_casket, td.casket_level {
-    width: 22ch;
+    width: 25ch;
 }
 
-input[name="casket_level_input"] {
-    width: 6ch;
+input[name="casket_individual_level_input"] {
+    width: 10ch;
 }
 
-/* td:nth-child(odd) {width: 32em;}
-td:nth-child(even) {width: 12em;} */
-
-tr:nth-child(even) {background-color: rgb(47, 45, 45);}
 tr:hover {background-color: coral;}
 
-fieldset {
-  border: 0;
+output {
+  text-align: right;
+  font-family: monospace;
+}
+
+#global_parameters fieldset {
+  display: inline-block;
+}
+
+#global_parameters fieldset legend{
+  font-weight: bold;}
+
+#rate_parameters, #playersq_parameters, #casket_parameters{
+    display: grid;
+/*    row-gap: 5px; */
+}
+
+#rate_parameters label {
+    display: grid;
+    grid-template-columns: 15ch 1fr auto; 
+    align-items: center;                    
+/*    column-gap: 2px;*/
+}
+
+#playersq_parameters > label,  #playersq_parameters > span{
+    display: grid;
+    grid-template-columns: 25ch 1fr auto; 
+    align-items: center;                    
+/*    column-gap: 2px;*/
+}
+
+#casket_parameters label {
+    display: grid;
+    grid-template-columns: 30ch 1fr auto; 
+    align-items: center;                    
+/*    column-gap: 2px;*/
+}
+
+#q_results {
+    display: inline-table;
+}
+
+#q_results:nth-child(odd) {
+    background-color: rgb(47, 45, 45);
 }

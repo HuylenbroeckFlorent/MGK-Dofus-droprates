@@ -4,15 +4,36 @@ var PRECISION = 2;
 var PP_ARRAY, BASE_RATE, QMAX;
 var RES;
 
-function init_nbr_players_options() {
-    nbre_players_select = document.getElementById("nbr_players")
-    var radio_buttons = "<fieldset><legend>Nombre de joueurs</legend>\n<div>"
-    for (var i=1; i<=8; i++) {
-        radio_buttons += "<label for=\"this.nextElementSibling\">" + i + "</label>"
-        radio_buttons += "<input type=\"radio\" name=\"nbr_players_radio\" value="+i+" "+((NBRE_JOUEURS == i)?" checked":"")+">\n"
+function init_player_count_input_options() {
+    var container = document.getElementById("player_count_input");
+    container.innerHTML = "";
+
+    var title = document.createElement("span");
+    title.textContent = "Nombre de joueurs";
+    container.appendChild(title);
+
+    var radio_container = document.createElement("span");
+    for (let i = 1; i <= 8; i++) {
+        var label = document.createElement("label");
+
+        var input = document.createElement("input");
+        input.type = "radio";
+        input.name = "player_count_input_radio";
+        input.value = i;
+        if (NBRE_JOUEURS === i) {
+            input.checked = true;
+        }
+
+        input.addEventListener("change", update_players_array);
+
+        var span = document.createElement("span");
+        span.textContent = i;
+
+        label.appendChild(input);
+        label.appendChild(span);
+        radio_container.appendChild(label);  
     }
-    nbre_players_select.innerHTML = radio_buttons;
-    nbre_players_select.addEventListener("change", update_players_array);
+    container.appendChild(radio_container);
 }
 
 function update_players_array(input) {
@@ -94,7 +115,7 @@ function color_player_array() {
 }
 
 function update_casket_levels(input) {
-    var casket_level_inputs = document.querySelectorAll('input[name="casket_level_input"]');
+    var casket_level_inputs = document.querySelectorAll('input[name="casket_individual_level_input"]');
     var new_value = input.target.value;
     for (var casket_level_input of casket_level_inputs) {
         casket_level_input.value = new_value;
@@ -109,7 +130,7 @@ function update_data() {
     const BOOST_COFFRES = [3, 8, 10.5, 15.5, 15.5, 40.5];
     const MAX_BOOST_COFFRES = [3, 3, 3, 3, 5, 5];
 
-    var nboosts_coffres = parseInt(document.getElementById("tours_coffres_input").value);
+    var nboosts_coffres = parseInt(document.getElementById("casket_nboost_input").value);
 
     PP_ARRAY = [];
     for (var pp_input_div of pp_input_divs) {
@@ -119,7 +140,7 @@ function update_data() {
         if (pp_input_coffre.checked) {
             var player_level = parseInt(pp_input_div.querySelector(':scope input[name="player_level_input"]').value);
             var casket_pp = 100 + player_level
-            var casket_level = pp_input_div.querySelector(':scope input[name="casket_level_input"]').value;
+            var casket_level = pp_input_div.querySelector(':scope input[name="casket_individual_level_input"]').value;
             casket_pp +=  Math.min(MAX_BOOST_COFFRES[casket_level-1], nboosts_coffres) * BOOST_COFFRES[casket_level-1];
             PP_ARRAY.push(casket_pp);
         } 
@@ -151,7 +172,7 @@ function update_results_display() {
 
     var q_average = 0;
     var q_results_array = document.getElementById("q_results");
-    var q_results_array_inner = "<thead><tr><th scope=\"col\">Taux de drop par quantit&#233;</th><th scope=\"col\">Taux global</th></tr></thead><tbody>";
+    var q_results_array_inner = "<thead><tr><th scope=\"col\">Quantit&#233;</th><th scope=\"col\">Taux global</th></tr></thead><tbody>";
     for (var q=0; q <= QMAX; q++) {
         var result = RES[1][q];
         q_average += q*result;
@@ -170,13 +191,13 @@ function update_results_display() {
 }
 
 restrict_children_inputs(document);
-init_nbr_players_options();
+init_player_count_input_options();
 init_players_array();
 document.getElementById("base_rate_input").addEventListener("input", update_data);
 document.getElementById("chall_bonus_input").addEventListener("input", update_data);
 document.getElementById("qmax_input").addEventListener("input", update_data);
 document.getElementById("precision_input").addEventListener("input", update_precision);
-document.getElementById("lvl_coffres_input").addEventListener("input", update_data);
-document.getElementById("lvl_coffres_input").addEventListener("input", update_casket_levels);
-document.getElementById("tours_coffres_input").addEventListener("input", update_data);
+document.getElementById("casket_level_input").addEventListener("input", update_data);
+document.getElementById("casket_level_input").addEventListener("input", update_casket_levels);
+document.getElementById("casket_nboost_input").addEventListener("input", update_data);
 update_data();

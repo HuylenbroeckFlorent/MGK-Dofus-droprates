@@ -11,38 +11,58 @@
         <script defer src="compute_droprate.js"></script>
 	</head>
 	<body>
-		<div id="rate">
-			<label for="base_rate">Taux de base </label>
-			<input id="base_rate_input" class="minmaxrestricted" type="number" value="5" min="0" max="100"/>
-			<span>%</span>
-		</div>
-        <div id="challenges">
-            <label for="chall_bonus">Challenges </label>
-			<input id="chall_bonus_input" class="minmaxrestricted" type="number" value="0" min="0" max="999"/>
-            <span>%</span>
+        <div id="global_parameters">
+            <fieldset id="rate_parameters">
+                <legend>Taux de drop</legend>
+                <label>
+                    <span>Taux de base </span> 
+                    <input id="base_rate_input" class="minmaxrestricted" type="number" value="5" min="0" max="100"/>
+                    <span>%</span>
+                </label>
+                <label>
+                    <span>Challenges </span> 
+                    <input id="chall_bonus_input" class="minmaxrestricted" type="number" value="0" min="0" max="999"/>
+                    <span>%</span>
+                </label>
+            </fieldset>
+            <fieldset id="playersq_parameters">
+                <legend>Joueurs & quantit&#233;</legend>
+                <span id="player_count_input"></span>
+                <label>
+                    <span>Quantit&#233; max <emph>(0 = illimit&#233;)</emph></span>
+                    <input id="qmax_input" type="range" value="0" min="0" max="4" oninput="this.nextElementSibling.value = this.value">
+                    <output>0</output>
+                </label>
+            </fieldset>
+            <fieldset id="casket_parameters">
+                <legend>Coffres</legend>
+                <label>
+                    <span>Niveau des coffres </span>
+                    <input id="casket_level_input" type="range" value="6" min="1" max="6" oninput="this.nextElementSibling.value = this.value">
+                    <output>6</output>
+                </label>
+                <label>
+                    <span>Tours de boost des coffres</span>
+                    <input id="casket_nboost_input" type="range" value="1" min="1" max="5" oninput="this.nextElementSibling.value = this.value">
+                    <output>1</output>
+                </label>
+            </fieldset>
         </div>
-		<div id="qmax">
-            <label id="qmax_input_label" for="qmax_input">Quantit&#233; max </label><span>(0 = illimit&#233;)</span>
-			<input id="qmax_input" type="range" value="0" min="0" max="4" oninput="this.nextElementSibling.value = this.value">
-            <output>0</output> <!-- https://stackoverflow.com/a/18936328 -->
-		</div>
-		<div id="precision">
+		<div id="precision_parameter">
             <label id="precision_input_label" for="precision_input">Pr&#233;cision</label>
 			<input id="precision_input" type="range" value="2" min="0" max="10" oninput="this.nextElementSibling.value = this.value">
             <output>2</output> 
 		</div>
-        <div id="boost_coffres">
-            <label id="lvl_coffres_input_label" for="lvl_coffres_input">Niveau des coffres</label>
-			<input id="lvl_coffres_input" type="range" value="6" min="1" max="6" oninput="this.nextElementSibling.value = this.value">
-            <output>6</output>
-            <br>
-            <label id="tours_coffres_input_label" for="tours_coffres_input">Tours &#233;coul&#233;s de boost des coffres</label>
-			<input id="tours_coffres_input" type="range" value="1" min="1" max="5" oninput="this.nextElementSibling.value = this.value">
-            <output>1</output>
-		</div>
-        <div id="nbr_players"></div>
-        <div id="players_data">
+        <div id="players_parameters">
             <table id="players_data_table">
+                <thead>
+                    <tr>
+                        <th scope="col" colspan=2>Personnage</th>
+                        <th scope="col">Stat de base</th>
+                        <th scope="col">Boost</th>
+                        <th scope="col">Taux individuel</th>
+                    </tr>
+                </thead>
                 <template id="player_input_template">
                     <tbody>
                         <tr>
@@ -79,7 +99,7 @@
                         <td class="casket_level">
                             <label>
                                 <span>Niveau du sort </span>
-                                <input name="casket_level_input" type="range" value="6" min="1" max="6" oninput="this.nextElementSibling.value = this.value"/>
+                                <input name="casket_individual_level_input" type="range" value="6" min="1" max="6" oninput="this.nextElementSibling.value = this.value"/>
                                 <output>6</output>
                             </label>
                         </td>
@@ -87,9 +107,10 @@
                     </tr>
                 </template>
             </table>
+            <table id="q_results"></table>
         </div>
         <div id="results">
-            <table id="q_results"></table>
+            
             <span id="q_average"></span>
         </div>
 	</body>
