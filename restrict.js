@@ -1,5 +1,7 @@
-function restrictNumberInput(input) {
-    let val = parseInt(input.target.value)
+function restrict_number_input(input) {
+    let val = parseInt(input.currentTarget.value)
+
+    console.log(val, " will be checked");
 
     if (input.target.hasAttribute("min") && val < this.min) {
         input.target.value = this.min; 
@@ -7,4 +9,8 @@ function restrictNumberInput(input) {
         input.target.value = this.max;
     }
 }
-pp_els = document.querySelectorAll(".minmaxrestricted").forEach((el) => el.addEventListener("input", restrictNumberInput));
+
+function restrict_children_inputs(doc) {
+    doc.querySelectorAll(".minmaxrestricted").forEach((el) => el.addEventListener("input", restrict_number_input));
+    doc.querySelectorAll(".minmaxrestricted").forEach((el) => console.log("element", el, "restricted"));
+}

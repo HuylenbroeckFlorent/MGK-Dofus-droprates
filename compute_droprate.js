@@ -1,7 +1,8 @@
 var NBRE_JOUEURS = 4;
 var PRECISION = 2;
 
-var PP_ARRAY, BASE_RATE, QMAX, NAMES, RES;
+var PP_ARRAY, BASE_RATE, QMAX;
+var RES;
 
 function init_nbr_players_options() {
     nbre_players_select = document.getElementById("nbr_players")
@@ -11,23 +12,23 @@ function init_nbr_players_options() {
         radio_buttons += "<input type=\"radio\" name=\"nbr_players_radio\" value="+i+" "+((NBRE_JOUEURS == i)?" checked":"")+">\n"
     }
     nbre_players_select.innerHTML = radio_buttons;
-    nbre_players_select.addEventListener("change", set_nbr_players);
+    nbre_players_select.addEventListener("change", update_players_array);
 }
 
-function set_nbr_players(input) {
+function update_players_array(input) {
     var tmp_kept = NBRE_JOUEURS;
     NBRE_JOUEURS = parseInt(input.target.value);
-    create_player_array(Math.min(tmp_kept, NBRE_JOUEURS));
-    collect_drop_data();
-    set_qmax_bounds();
+    init_players_array(Math.min(tmp_kept, NBRE_JOUEURS));
+    update_data();
+    update_qmax_bounds();
 }
 
-function set_precision(input) {
+function update_precision(input) {
     PRECISION = input.target.value;
-    display_results(RES);
+    update_results_display();
 }
 
-function set_qmax_bounds() {
+function update_qmax_bounds() {
     var qmax_input = document.getElementById("qmax_input");
     var updated_q = (parseInt(qmax_input.value) > PP_ARRAY.length) ? PP_ARRAY.length:parseInt(qmax_input.value);
 
@@ -36,7 +37,7 @@ function set_qmax_bounds() {
     qmax_input.max = PP_ARRAY.length;
 }
 
-function create_player_array(kept = 0) {
+function init_players_array(kept = 0) {
     var player_input_template = document.getElementById("player_input_template");
     var players_data_table = document.getElementById("players_data_table");
 
@@ -52,7 +53,8 @@ function create_player_array(kept = 0) {
     for (var i=kept; i<NBRE_JOUEURS; i++) {
         player_input_template_clone = player_input_template.content.cloneNode(true);
         player_input_template_clone.querySelector('[class="player_name"]').textContent = "Joueur " + (i+1);
-        player_input_template_clone.querySelectorAll('input[name="player_pp_input"]').forEach((el) => el.addEventListener("input", collect_drop_data));
+        restrict_children_inputs(player_input_template_clone);
+        player_input_template_clone.querySelectorAll('input[name="player_pp_input"]').forEach((el) => el.addEventListener("input", update_data));
         player_input_template_clone.querySelectorAll('input[name="player_has_casket_input"]').forEach((el) => el.addEventListener("input", insert_casket_row));
         players_data_table.append(player_input_template_clone);
     }
@@ -67,15 +69,16 @@ function insert_casket_row(input) {
         var casket_row_template_clone = casket_row_template.content.cloneNode(true);
         var casket_name = "Coffre de " + closest_tbody.querySelector(".player_name").textContent;
         casket_row_template_clone.querySelector(".casket_name").textContent = casket_name;
-        casket_row_template_clone.querySelectorAll('input').forEach((el) => el.addEventListener("input", collect_drop_data));
+        restrict_children_inputs(casket_row_template_clone);
+        casket_row_template_clone.querySelectorAll('input').forEach((el) => el.addEventListener("input", update_data));
         closest_tbody.querySelector(".player_icon").innerHTML = '<image class="inline_icon" src="images/head_enu.png">';
         closest_tbody.append(casket_row_template_clone);
     } else {
         closest_tbody.querySelectorAll("tr")[1].remove();
         closest_tbody.querySelector(".player_icon").innerHTML = '<image class="inline_icon" src="images/head_cra.png">';
     }
-    collect_drop_data();
-    set_qmax_bounds();
+    update_data();
+    update_qmax_bounds();
     color_player_array();
 }
 
@@ -99,7 +102,7 @@ function update_casket_levels(input) {
     }
 }
 
-function collect_drop_data() {
+function update_data() {
 
     var pp_input_divs = document.querySelectorAll('#players_data_table tbody');
     
@@ -109,7 +112,6 @@ function collect_drop_data() {
     var nboosts_coffres = parseInt(document.getElementById("tours_coffres_input").value);
 
     PP_ARRAY = [];
-    NAMES = [];
     for (var pp_input_div of pp_input_divs) {
         var pp_input = pp_input_div.querySelector(':scope input[name="player_pp_input"]');
         PP_ARRAY.push(parseInt(pp_input.value));
@@ -132,10 +134,10 @@ function collect_drop_data() {
     BASE_RATE *= (1 + parseFloat(document.getElementById("chall_bonus_input").value)/100);
 
     RES = PL_FSM(PP_ARRAY, BASE_RATE, QMAX);
-    display_results();
+    update_results_display();
 }
 
-function display_results() {
+function update_results_display() {
 
     if (typeof(RES) === 'undefined') {
         return;
@@ -167,19 +169,14 @@ function display_results() {
     } 
 }
 
-function bit_count(x) {
-	x = x - ((x >>> 1) & 0x55555555);
-	x = (x & 0x33333333) + ((x >>> 2) & 0x33333333);
-	return (((x + (x >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
-}
-
-init_nbr_players_options()
-create_player_array()
-document.getElementById("base_rate_input").addEventListener("input", collect_drop_data);
-document.getElementById("chall_bonus_input").addEventListener("input", collect_drop_data);
-document.getElementById("qmax_input").addEventListener("input", collect_drop_data);
-document.getElementById("precision_input").addEventListener("input", set_precision);
-document.getElementById("lvl_coffres_input").addEventListener("input", collect_drop_data);
+restrict_children_inputs(document);
+init_nbr_players_options();
+init_players_array();
+document.getElementById("base_rate_input").addEventListener("input", update_data);
+document.getElementById("chall_bonus_input").addEventListener("input", update_data);
+document.getElementById("qmax_input").addEventListener("input", update_data);
+document.getElementById("precision_input").addEventListener("input", update_precision);
+document.getElementById("lvl_coffres_input").addEventListener("input", update_data);
 document.getElementById("lvl_coffres_input").addEventListener("input", update_casket_levels);
-document.getElementById("tours_coffres_input").addEventListener("input", collect_drop_data);
-collect_drop_data()
+document.getElementById("tours_coffres_input").addEventListener("input", update_data);
+update_data();
