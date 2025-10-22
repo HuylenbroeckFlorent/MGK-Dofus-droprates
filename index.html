@@ -47,12 +47,18 @@
                     <output>1</output>
                 </label>
             </fieldset>
+            <!-- <fieldset id="import_export">
+                <legend>Import / Export</legend>
+                <label>
+                    <span>Import</span>
+                    <input type="file" id="import_json"/>
+                </label>
+                <label>
+                    <span>Export</span>
+                    <button id="export_json">Export</button>
+                </label>
+            </fieldset> -->
         </div>
-		<div id="precision_parameter">
-            <label id="precision_input_label" for="precision_input">Pr&#233;cision</label>
-			<input id="precision_input" type="range" value="2" min="0" max="10" oninput="this.nextElementSibling.value = this.value">
-            <output>2</output> 
-		</div>
         <div id="players_parameters">
             <table id="players_data_table">
                 <thead>
@@ -107,11 +113,29 @@
                     </tr>
                 </template>
             </table>
-            <table id="q_results"></table>
+            <table id="q_results">
+                <thead>
+                    <tr>
+                        <th scope="col">Quantit&#233;</th>
+                        <th scope="col">Taux global</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <template id="q_results_output_template">
+                    <tr>
+                        <td class="q_result_q"></td>
+                        <td class="q_result_result"></td>
+                    </tr>
+                </template>
+            </table>
         </div>
         <div id="results">
-            
             <span id="q_average"></span>
         </div>
+        <div id="precision_parameter">
+            <label id="precision_input_label" for="precision_input">Pr&#233;cision</label>
+			<input id="precision_input" type="range" value="2" min="0" max="10" oninput="this.nextElementSibling.value = this.value">
+            <output>2</output> 
+		</div>
 	</body>
 </html>

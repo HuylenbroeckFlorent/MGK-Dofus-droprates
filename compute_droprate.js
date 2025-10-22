@@ -170,16 +170,18 @@ function update_results_display() {
         player_result_tds[j].textContent = parseFloat((j_result*100).toFixed(PRECISION)) + "%";
     }
 
+    var q_result_output_tbody = document.querySelector("#q_results tbody");
+    q_result_output_tbody.innerHTML = "";
+    var q_result_output_template = document.getElementById("q_results_output_template");
     var q_average = 0;
-    var q_results_array = document.getElementById("q_results");
-    var q_results_array_inner = "<thead><tr><th scope=\"col\">Quantit&#233;</th><th scope=\"col\">Taux global</th></tr></thead><tbody>";
-    for (var q=0; q <= QMAX; q++) {
+    for (var q=QMAX; q >= 0; q--) {
+        var q_result_output_template_clone = q_result_output_template.content.cloneNode(true);
         var result = RES[1][q];
         q_average += q*result;
-        q_results_array_inner += "<tr><td>"+q+"</td><td>"+parseFloat((result*100).toFixed(PRECISION))+"%</td></tr>";
+        q_result_output_template_clone.querySelector(".q_result_q").textContent = q;
+        q_result_output_template_clone.querySelector(".q_result_result").textContent = parseFloat((result*100).toFixed(PRECISION)) + "%";
+        q_result_output_tbody.appendChild(q_result_output_template_clone);
     }
-
-    q_results_array.innerHTML = q_results_array_inner + "</tbody>";
 
     var q_average_span = document.getElementById("q_average");
     if (q_average > 1 || q_average == 0) {

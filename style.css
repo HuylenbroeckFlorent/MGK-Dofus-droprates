@@ -19,7 +19,7 @@ td.player_name {
     width: 18ch;
 }
 
-td.player_result {
+td.player_result, td.q_result_result {
     width: 15ch;
 }
 
@@ -35,11 +35,21 @@ input[name="casket_individual_level_input"] {
     width: 10ch;
 }
 
+td.q_result_q {
+    width: 8ch;
+    text-align: right;
+    padding-right: 2ch;
+}
+
 tr:hover {background-color: coral;}
 
 output {
   text-align: right;
   font-family: monospace;
+}
+
+#global_parameters {
+    padding-bottom: 20px;
 }
 
 #global_parameters fieldset {
@@ -49,36 +59,64 @@ output {
 #global_parameters fieldset legend{
   font-weight: bold;}
 
-#rate_parameters, #playersq_parameters, #casket_parameters{
+#rate_parameters, #playersq_parameters, #casket_parameters, #import_export {
     display: grid;
-/*    row-gap: 5px; */
 }
 
 #rate_parameters label {
     display: grid;
     grid-template-columns: 15ch 1fr auto; 
     align-items: center;                    
-/*    column-gap: 2px;*/
 }
 
 #playersq_parameters > label,  #playersq_parameters > span{
     display: grid;
     grid-template-columns: 25ch 1fr auto; 
     align-items: center;                    
-/*    column-gap: 2px;*/
 }
 
 #casket_parameters label {
     display: grid;
     grid-template-columns: 30ch 1fr auto; 
     align-items: center;                    
-/*    column-gap: 2px;*/
 }
 
-#q_results {
+#q_results tr:nth-child(odd) {
+    background-color: rgb(47, 45, 45);
+}
+
+#q_results th {
+    background-color: rgb(39, 37, 37);
+}
+
+#players_data_table, #q_results {
     display: inline-table;
 }
 
-#q_results:nth-child(odd) {
-    background-color: rgb(47, 45, 45);
+.casket_level label {
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+}
+
+#players_parameters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+#players_data_table {
+  grid-column: 1 / span 2;
+  padding-right: 2rem;
+}
+
+#q_results {
+  grid-column: 3; 
+  grid-row: 1;
+  align-self: start;
+}
+
+table {
+    border: 1px solid white;
 }
