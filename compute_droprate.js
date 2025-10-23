@@ -75,6 +75,7 @@ function init_players_array(kept = 0) {
         player_input_template_clone = player_input_template.content.cloneNode(true);
         player_input_template_clone.querySelector('[class="player_name"]').textContent = "Joueur " + (i+1);
         add_restrict_number_input(player_input_template_clone);
+        add_detect_and_propagate_scroll(player_input_template_clone);
         player_input_template_clone.querySelectorAll('input[name="player_pp_input"]').forEach((el) => el.addEventListener("input", update_data));
         player_input_template_clone.querySelectorAll('input[name="player_has_casket_input"]').forEach((el) => el.addEventListener("input", insert_casket_row));
         players_data_table.append(player_input_template_clone);
