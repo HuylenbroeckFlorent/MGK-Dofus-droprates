@@ -1,6 +1,7 @@
 body {
   background-color: rgb(39, 37, 37);
   color: white;
+  font-family: "Roboto", sans-serif;
 }
 
 .inline_icon {
@@ -13,6 +14,8 @@ body {
 th, td {
   padding: 5px;
   text-align: left;
+  height: 2ch;
+
 }
 
 td.player_name {
@@ -36,12 +39,15 @@ input[name="casket_individual_level_input"] {
 }
 
 td.q_result_q {
-    width: 8ch;
+    width: 10ch;
     text-align: right;
     padding-right: 2ch;
 }
 
-tr:hover {background-color: coral;}
+/* Align "Quantité"" to the right in q_results header" */
+#q_results_qte {
+    text-align: end;
+}
 
 output {
   text-align: right;
@@ -52,8 +58,29 @@ output {
     padding-bottom: 20px;
 }
 
+#global_parameters {
+    display: grid;
+    grid-template-columns: 30ch 57.5ch 30ch 25ch;
+    column-gap: 1.5rem;
+    align-items: stretch;
+    gap: 1.5rem;
+}
+
 #global_parameters fieldset {
-  display: inline-block;
+    display: inline-block;        
+}
+
+#global_parameters fieldset {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    padding: 0.75rem;
+    border: 1px solid #666;
+    border-radius: 0.5rem;
 }
 
 #global_parameters fieldset legend{
@@ -65,7 +92,7 @@ output {
 
 #rate_parameters label {
     display: grid;
-    grid-template-columns: 15ch 1fr auto; 
+    grid-template-columns: 13ch 1fr auto; 
     align-items: center;                    
 }
 
@@ -77,7 +104,7 @@ output {
 
 #casket_parameters label {
     display: grid;
-    grid-template-columns: 30ch 1fr auto; 
+    grid-template-columns: 16ch 1fr auto; 
     align-items: center;                    
 }
 
@@ -108,7 +135,6 @@ output {
 
 #players_data_table {
   grid-column: 1 / span 2;
-  padding-right: 2rem;
 }
 
 #q_results {
@@ -117,6 +143,21 @@ output {
   align-self: start;
 }
 
-table {
-    border: 1px solid white;
+/* Apply same typography and row spacing to both tables */
+#players_data_table, #q_results {
+    border-collapse: separate;
+    border-spacing: 1;  
+    width: 100%;
+/*    box-sizing: border-box;*/
+    border: 1px solid #666;
+    border-radius: 0.5rem; 
+}
+
+#players_data_table td,
+#q_results td,
+#players_data_table th,
+#q_results th {
+    padding: 5px 8px;
+    vertical-align: middle;
+    height: 1.5em; /* ch here produces different height accross both tables */
 }

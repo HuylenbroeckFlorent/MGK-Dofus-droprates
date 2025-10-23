@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<!-- <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"> -->
-		<title>MGK Droprates</title>
+		<title>MGK Dofus calculateur de drop</title>
 		<link rel="icon" type="image/x-icon" href="/images/pp128.png">
 		<link rel="stylesheet" type="text/css" href="style.css">
         <script src="plackett_luce_FSM.js"></script>
@@ -11,6 +11,9 @@
         <script defer src="compute_droprate.js"></script>
 	</head>
 	<body>
+        <h1>
+            Dofus R&#233;tro - Calculateur de drop
+        </h1>
         <div id="global_parameters">
             <fieldset id="rate_parameters">
                 <legend>Taux de drop</legend>
@@ -42,7 +45,7 @@
                     <output>6</output>
                 </label>
                 <label>
-                    <span>Tours de boost des coffres</span>
+                    <span>Tours de boost</span>
                     <input id="casket_nboost_input" type="range" value="1" min="1" max="5" oninput="this.nextElementSibling.value = this.value">
                     <output>1</output>
                 </label>
@@ -116,7 +119,7 @@
             <table id="q_results">
                 <thead>
                     <tr>
-                        <th scope="col">Quantit&#233;</th>
+                        <th scope="col" id=q_results_qte>Quantit&#233;</th>
                         <th scope="col">Taux global</th>
                     </tr>
                 </thead>
