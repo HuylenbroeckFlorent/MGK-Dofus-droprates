@@ -74,7 +74,7 @@ function init_players_array(kept = 0) {
     for (var i=kept; i<NBRE_JOUEURS; i++) {
         player_input_template_clone = player_input_template.content.cloneNode(true);
         player_input_template_clone.querySelector('[class="player_name"]').textContent = "Joueur " + (i+1);
-        restrict_children_inputs(player_input_template_clone);
+        add_restrict_number_input(player_input_template_clone);
         player_input_template_clone.querySelectorAll('input[name="player_pp_input"]').forEach((el) => el.addEventListener("input", update_data));
         player_input_template_clone.querySelectorAll('input[name="player_has_casket_input"]').forEach((el) => el.addEventListener("input", insert_casket_row));
         players_data_table.append(player_input_template_clone);
@@ -90,7 +90,8 @@ function insert_casket_row(input) {
         var casket_row_template_clone = casket_row_template.content.cloneNode(true);
         var casket_name = "Coffre de " + closest_tbody.querySelector(".player_name").textContent;
         casket_row_template_clone.querySelector(".casket_name").textContent = casket_name;
-        restrict_children_inputs(casket_row_template_clone);
+        add_restrict_number_input(casket_row_template_clone);
+        add_detect_and_propagate_scroll(casket_row_template_clone);
         casket_row_template_clone.querySelectorAll('input').forEach((el) => el.addEventListener("input", update_data));
         closest_tbody.querySelector(".player_icon").innerHTML = '<image class="inline_icon" src="images/head_enu.png">';
         closest_tbody.append(casket_row_template_clone);
@@ -192,7 +193,6 @@ function update_results_display() {
     } 
 }
 
-restrict_children_inputs(document);
 init_player_count_input_options();
 init_players_array();
 document.getElementById("base_rate_input").addEventListener("input", update_data);

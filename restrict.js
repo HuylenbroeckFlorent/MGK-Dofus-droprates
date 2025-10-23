@@ -8,6 +8,8 @@ function restrict_number_input(input) {
     }
 }
 
-function restrict_children_inputs(doc) {
+function add_restrict_number_input(doc) {
     doc.querySelectorAll(".minmaxrestricted").forEach((el) => el.addEventListener("input", restrict_number_input));
 }
+
+add_restrict_number_input(document);
