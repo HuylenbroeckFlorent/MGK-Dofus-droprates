@@ -10,9 +10,10 @@ function init_player_count_input_options() {
 
     var title = document.createElement("span");
     title.textContent = "Nombre de joueurs";
-    container.appendChild(title);
+    title.className = "player_count_title"
 
-    var radio_container = document.createElement("span");
+    var radio_container = document.createElement("div");
+    radio_container.className = "player_count_radios";
     for (let i = 1; i <= 8; i++) {
         var label = document.createElement("label");
 
@@ -33,6 +34,8 @@ function init_player_count_input_options() {
         label.appendChild(span);
         radio_container.appendChild(label);  
     }
+
+    container.appendChild(title);
     container.appendChild(radio_container);
 }
 
@@ -172,9 +175,9 @@ function update_results_display() {
         player_result_tds[j].textContent = parseFloat((j_result*100).toFixed(PRECISION)) + "%";
     }
 
-    var q_result_output_tbody = document.querySelector("#q_results tbody");
+    var q_result_output_tbody = document.querySelector("#qty_data_table tbody");
     q_result_output_tbody.innerHTML = "";
-    var q_result_output_template = document.getElementById("q_results_output_template");
+    var q_result_output_template = document.getElementById("qty_data_table_output_template");
     var q_average = 0;
     for (var q=QMAX; q >= 0; q--) {
         var q_result_output_template_clone = q_result_output_template.content.cloneNode(true);
@@ -185,13 +188,17 @@ function update_results_display() {
         q_result_output_tbody.appendChild(q_result_output_template_clone);
     }
 
-    var q_average_span = document.getElementById("q_average");
+    var q_average_tr = document.createElement("tr");
+    var q_average_td = document.createElement("td");
+    q_average_td.colSpan = 2;
+    q_average_tr.appendChild(q_average_td)
     if (q_average > 1 || q_average == 0) {
-        q_average_span.innerHTML = "<b>"+parseFloat(q_average.toFixed(PRECISION)) + " items loot par combat en moyenne.</b>";
+        q_average_td.innerHTML = "<b>"+parseFloat(q_average.toFixed(PRECISION)) + " items loot par combat en moyenne.</b>";
     } else {
         var inverse_q_average = Math.round(1/q_average);
-        q_average_span.innerHTML = "<b>Un item loot en moyenne tous les"+((inverse_q_average==1)?"":` ~${inverse_q_average}`) + " combats.</b>";
-    } 
+        q_average_td.innerHTML = "<b>Un item loot en moyenne tous les"+((inverse_q_average==1)?"":` ~${inverse_q_average}`) + " combats.</b>";
+    }
+    q_result_output_tbody.appendChild(q_average_tr);
 }
 
 init_player_count_input_options();
