@@ -128,6 +128,14 @@ function update_casket_levels(input) {
     }
 }
 
+function update_player_levels(input) {
+    var player_level_inputs = document.querySelectorAll('input[name="player_individual_level_input"]');
+    var new_value = input.target.value;
+    for (var player_level_input of player_level_inputs) {
+        player_level_input.value = new_value;
+    }
+}
+
 function update_data() {
 
     var pp_input_divs = document.querySelectorAll('#players_data_table tbody');
@@ -143,7 +151,7 @@ function update_data() {
         PP_ARRAY.push(parseInt(pp_input.value));
         var pp_input_coffre = pp_input_div.querySelector(':scope input[name="player_has_casket_input"]');
         if (pp_input_coffre.checked) {
-            var player_level = parseInt(pp_input_div.querySelector(':scope input[name="player_level_input"]').value);
+            var player_level = parseInt(pp_input_div.querySelector(':scope input[name="player_individual_level_input"]').value);
             var casket_pp = 100 + player_level
             var casket_level = pp_input_div.querySelector(':scope input[name="casket_individual_level_input"]').value;
             casket_pp +=  Math.min(MAX_BOOST_COFFRES[casket_level-1], nboosts_coffres) * BOOST_COFFRES[casket_level-1];
@@ -179,7 +187,7 @@ function update_results_display() {
     q_result_output_tbody.innerHTML = "";
     var q_result_output_template = document.getElementById("qty_data_table_output_template");
     var q_average = 0;
-    for (var q=QMAX; q >= 0; q--) {
+    for (var q=0; q <= QMAX; q++) {
         var q_result_output_template_clone = q_result_output_template.content.cloneNode(true);
         var result = RES[1][q];
         q_average += q*result;
@@ -207,7 +215,9 @@ document.getElementById("base_rate_input").addEventListener("input", update_data
 document.getElementById("chall_bonus_input").addEventListener("input", update_data);
 document.getElementById("qmax_input").addEventListener("input", update_data);
 document.getElementById("precision_input").addEventListener("input", update_precision);
-document.getElementById("casket_level_input").addEventListener("input", update_data);
 document.getElementById("casket_level_input").addEventListener("input", update_casket_levels);
+document.getElementById("casket_level_input").addEventListener("input", update_data);
+document.getElementById("player_level_input").addEventListener("input", update_player_levels);
+document.getElementById("player_level_input").addEventListener("input", update_data);
 document.getElementById("casket_nboost_input").addEventListener("input", update_data);
 update_data();

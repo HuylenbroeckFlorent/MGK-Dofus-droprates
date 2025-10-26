@@ -33,11 +33,18 @@
                 <fieldset id="players_params">
                     <legend>Donn&#233;es des joueurs</legend>
                     <div id="player_count_input"></div>
-                    <label>
-                        <span>Niveau des coffres </span>
-                        <input id="casket_level_input" type="range" value="6" min="1" max="6" oninput="this.nextElementSibling.value = this.value">
-                        <output>6</output>
-                    </label>
+                    <div id="player_individual_overrides">
+                        <label>
+                            <span>Niveau des joueurs </span>
+                            <input id="player_level_input" type="range" value="200" min="100" max="200" oninput="this.nextElementSibling.value = this.value">
+                            <output>200</output>
+                        </label>
+                        <label>
+                            <span>Niveau des coffres </span>
+                            <input id="casket_level_input" type="range" value="6" min="1" max="6" oninput="this.nextElementSibling.value = this.value">
+                            <output>6</output>
+                        </label>
+                    </div>
                 </fieldset>
                 <fieldset id="fight_params">
                     <legend>Donn&#233;es du combat</legend>
@@ -53,21 +60,28 @@
                     </label>
                 </fieldset>
             </div>
-            <table id="qty_data_table">
-                <thead>
-                    <tr>
-                        <th scope="col" id=qty_data_table_qte>Quantit&#233;</th>
-                        <th scope="col">Taux global</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-                <template id="qty_data_table_output_template">
-                    <tr>
-                        <td class="q_result_q"></td>
-                        <td class="q_result_result"></td>
-                    </tr>
-                </template>
-            </table>
+            <div id="qty_precision_wrapper">
+                <table id="qty_data_table">
+                    <thead>
+                        <tr>
+                            <th scope="col" id=qty_data_table_qte>Quantit&#233;</th>
+                            <th scope="col">Taux global</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <template id="qty_data_table_output_template">
+                        <tr>
+                            <td class="q_result_q"></td>
+                            <td class="q_result_result"></td>
+                        </tr>
+                    </template>
+                </table>
+                <div id="precision_parameter">
+                    <label id="precision_input_label" for="precision_input">Pr&#233;cision</label>
+                    <input id="precision_input" type="range" value="2" min="0" max="8" oninput="this.nextElementSibling.value = this.value">
+                    <output>2</output> 
+                </div>
+            </div>
             <table id="players_data_table">
                 <thead>
                     <tr>
@@ -107,7 +121,7 @@
                         <td class="player_level">
                             <label>
                                 <span>Niveau du joueur </span>
-                                <input name="player_level_input" class="minmaxrestricted" type="number" value="200" min="100" max="200"/>
+                                <input name="player_individual_level_input" class="minmaxrestricted" type="number" value="200" min="100" max="200"/>
                             </label>
                         </td>
                         <td class="casket_level">
@@ -121,16 +135,6 @@
                     </tr>
                 </template>
             </table>
-                
-            </div>
-            <div id="results">
-                <span id="q_average"></span>
-            </div>
-            <div id="precision_parameter">
-                <label id="precision_input_label" for="precision_input">Pr&#233;cision</label>
-                <input id="precision_input" type="range" value="2" min="0" max="8" oninput="this.nextElementSibling.value = this.value">
-                <output>2</output> 
-            </div>
         </div>
 	</body>
 </html>
